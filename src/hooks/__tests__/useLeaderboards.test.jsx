@@ -1,12 +1,10 @@
-import {
-  describe, it, expect, vi, beforeEach,
-} from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-import api from '../../api/api';
-import useLeaderboards from '../useLeaderboards';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import api from "../../api/api";
+import useLeaderboards from "../useLeaderboards";
 
-vi.mock('../../api/api');
+vi.mock("../../api/api");
 
 /**
  * Skenario pengujian useLeaderboards hook (React Query):
@@ -18,7 +16,12 @@ vi.mock('../../api/api');
  */
 function createWrapper() {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 1000 * 60,
+      },
+    },
   });
   function Wrapper({ children }) {
     return (
@@ -28,18 +31,20 @@ function createWrapper() {
   return Wrapper;
 }
 
-describe('useLeaderboards hook', () => {
+describe("useLeaderboards hook", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should start in a loading state and then return the fetched leaderboards', async () => {
+  it("should start in a loading state and then return the fetched leaderboards", async () => {
     const fakeLeaderboards = [
-      { user: { id: 'user-1', name: 'User 1' }, score: 100 },
+      { user: { id: "user-1", name: "User 1" }, score: 100 },
     ];
     api.getLeaderboards.mockResolvedValue(fakeLeaderboards);
 
-    const { result } = renderHook(() => useLeaderboards(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useLeaderboards(), {
+      wrapper: createWrapper(),
+    });
 
     expect(result.current.isLoading).toBe(true);
 
@@ -49,18 +54,22 @@ describe('useLeaderboards hook', () => {
     expect(result.current.isError).toBe(false);
   });
 
-  it('should expose an error state when the API call fails, without throwing', async () => {
-    api.getLeaderboards.mockRejectedValue(new Error('Gagal memuat leaderboard'));
+  it("should expose an error state when the API call fails, without throwing", async () => {
+    api.getLeaderboards.mockRejectedValue(
+      new Error("Gagal memuat leaderboard"),
+    );
 
-    const { result } = renderHook(() => useLeaderboards(), { wrapper: createWrapper() });
+    const { result } = renderHook(() => useLeaderboards(), {
+      wrapper: createWrapper(),
+    });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    expect(result.current.error.message).toBe('Gagal memuat leaderboard');
+    expect(result.current.error.message).toBe("Gagal memuat leaderboard");
     expect(result.current.data).toBeUndefined();
   });
 
-  it('should call the API only once for two hook instances sharing the same cache', async () => {
+  it("should call the API only once for two hook instances sharing the same cache", async () => {
     api.getLeaderboards.mockResolvedValue([]);
     const wrapper = createWrapper();
 
