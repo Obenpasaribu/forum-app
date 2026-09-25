@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "message": "ok",
+  "data": {
+    "user": {
+      "id": "user-1",
+      "name": "Dimas Ariefiansyah",
+      "email": "dimas@mail.com",
+      "avatar": "https://ui-avatars.com/api/?name=Dimas"
+    }
+  }
+}
