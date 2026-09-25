@@ -1,1 +1,0 @@
-hanya coba disabled ok
