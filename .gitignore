@@ -5,4 +5,4 @@ dist
 coverage
 storybook-static
 cypress/videos
-cypress/screenshots
+
